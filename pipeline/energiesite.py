@@ -23,7 +23,6 @@ MAATREGELEN = {
 }
 
 EXTRA_CSS = """
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&display=swap');
 :root{--warm:#c2571a;--warm-soft:#fbe9dd;--acc-soft:#e3f2ee}
 h1,h2,.hero h1,.kern b{font-family:Archivo,-apple-system,"Segoe UI",Roboto,sans-serif}
 h1{font-size:34px;font-weight:800;letter-spacing:-.3px;line-height:1.1}
@@ -146,6 +145,8 @@ def pagina(titel: str, body: str, diepte: int, omschrijving: str, canonical: str
 <meta name="description" content="{e(omschrijving)}">
 <link rel="canonical" href="{BASIS_URL}{canonical}">
 {adsense}
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&display=swap">
 <style>{CSS}{EXTRA_CSS}</style>
 </head>
 <body>
