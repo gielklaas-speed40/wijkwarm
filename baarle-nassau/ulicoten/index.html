@@ -83,6 +83,16 @@ header .brand span{color:var(--warm)}
 .knoppen{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 4px}
 .knoppen a{display:inline-block;background:var(--acc);color:#fff;text-decoration:none;padding:9px 16px;border-radius:6px;font-weight:600}
 .toplijst td.num{width:120px}
+.reken{background:var(--panel);border:1px solid var(--line);padding:18px 20px;margin:12px 0 24px;max-width:720px}
+.reken .velden{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px 20px;margin:4px 0 14px}
+.reken label{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
+.reken input,.reken select{width:100%;font:inherit;font-size:16px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.reken .uit{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px 24px;border-top:1px solid var(--line);padding-top:14px}
+.reken .uit b{display:block;font-family:Archivo,sans-serif;font-size:30px;font-weight:800;line-height:1.1;color:var(--acc)}
+.reken .uit b.warm{color:var(--warm)}
+.reken .uit span{display:block;font-size:13px;color:var(--mut);margin-top:4px}
+.reken p.klein{margin:12px 0 0}
+.maatregelen{display:flex;flex-wrap:wrap;gap:8px 18px;margin:6px 0 18px;font-size:15px}
 .filter{margin:6px 0 12px;max-width:360px}
 .filter input{width:100%;font:inherit;padding:9px 12px;border:1px solid var(--line);border-radius:6px}
 </style>
@@ -107,6 +117,7 @@ header .brand span{color:var(--warm)}
 <div class="tbl"><table><tr><th>Isolatie</th><th>Per m², één maatregel</th><th>Per m², twee of meer</th><th>Minimum</th></tr><tr><td>Spouwmuurisolatie</td><td class="num">8 euro</td><td class="num">16 euro</td><td class="num">10 m²</td></tr><tr><td>Gevelisolatie (binnen of buiten)</td><td class="num">38 euro</td><td class="num">76 euro</td><td class="num">10 m²</td></tr><tr><td>Dakisolatie</td><td class="num">30 euro</td><td class="num">60 euro</td><td class="num">20 m²</td></tr><tr><td>Vloer- of bodemisolatie</td><td class="num">11 euro</td><td class="num">22 euro</td><td class="num">20 m²</td></tr><tr><td>HR++ glas in bestaande kozijnen</td><td class="num">25 euro</td><td class="num">50 euro</td><td class="num">8 m²</td></tr><tr><td>Triple glas in nieuwe isolerende kozijnen</td><td class="num">111 euro</td><td class="num">222 euro</td><td class="num">8 m²</td></tr></table></div>
 <p class="klein">Basisbedrag per m² bij één maatregel, het dubbele bij twee of meer maatregelen binnen 24 maanden. Een warmtepomp of zonneboiler telt mee als maatregel. Zonnepanelen: Geen ISDE. Wel btw-vrijstelling op de aanschaf voor woningen en salderen tot en met 2026. Thuisbatterij: Geen landelijke subsidie in 2026. Sommige gemeenten en provincies hebben een eigen regeling. Bron en actuele voorwaarden: <a href="https://www.rvo.nl/subsidies-financiering/isde" rel="noopener" target="_blank">rvo.nl</a>.</p>
 
+<p class="maatregelen">Reken het uit voor jouw huis: <a href="../isolatie/">Isolatie in Baarle-Nassau</a> <a href="../warmtepomp/">Warmtepomp in Baarle-Nassau</a> <a href="../zonnepanelen/">Zonnepanelen in Baarle-Nassau</a></p>
 <p class="klein">Verbouwen in Baarle-Nassau? Bekijk de <a href="https://vergunningenradar.nl/baarle-nassau/">recente bouwvergunningen in Baarle-Nassau</a> op Vergunningenradar. Andere wijken: <a href="../">Baarle-Nassau</a>.</p>
 </div></main>
 <footer><div class="wrap">Bron: woningcijfers uit CBS Kerncijfers wijken en buurten 2025, gas en stroom uit CBS Energieverbruik particuliere woningen 2025 (verbruik over 2024), zonnestroom en aardgasvrij uit de kerncijfers 2024. Subsidiebedragen van RVO, controleer altijd de actuele regeling. Een dienst van <a href="https://klaasystems.nl/">Klaasystems</a>.</div></footer>

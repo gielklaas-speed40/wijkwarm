@@ -83,6 +83,16 @@ header .brand span{color:var(--warm)}
 .knoppen{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 4px}
 .knoppen a{display:inline-block;background:var(--acc);color:#fff;text-decoration:none;padding:9px 16px;border-radius:6px;font-weight:600}
 .toplijst td.num{width:120px}
+.reken{background:var(--panel);border:1px solid var(--line);padding:18px 20px;margin:12px 0 24px;max-width:720px}
+.reken .velden{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px 20px;margin:4px 0 14px}
+.reken label{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
+.reken input,.reken select{width:100%;font:inherit;font-size:16px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.reken .uit{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px 24px;border-top:1px solid var(--line);padding-top:14px}
+.reken .uit b{display:block;font-family:Archivo,sans-serif;font-size:30px;font-weight:800;line-height:1.1;color:var(--acc)}
+.reken .uit b.warm{color:var(--warm)}
+.reken .uit span{display:block;font-size:13px;color:var(--mut);margin-top:4px}
+.reken p.klein{margin:12px 0 0}
+.maatregelen{display:flex;flex-wrap:wrap;gap:8px 18px;margin:6px 0 18px;font-size:15px}
 .filter{margin:6px 0 12px;max-width:360px}
 .filter input{width:100%;font:inherit;padding:9px 12px;border:1px solid var(--line);border-radius:6px}
 </style>
@@ -96,6 +106,7 @@ header .brand span{color:var(--warm)}
 <h1>Energie per wijk in Voerendaal</h1>
 <p class="lead">5.883 woningen in 5 wijken. Gemiddeld 1.010 m³ gas per woning (Nederland 790 m³), 45% van de woningen heeft zonnepanelen, 3% is aardgasvrij.</p>
 <div class="advies"></div>
+<p class="maatregelen">Wat wil je doen? <a href="isolatie/">Isolatie in Voerendaal</a> <a href="warmtepomp/">Warmtepomp in Voerendaal</a> <a href="zonnepanelen/">Zonnepanelen in Voerendaal</a></p>
 <h2>Wijken, gesorteerd op gasverbruik</h2>
 <div class="filter"><input id="filter" placeholder="Zoek een wijk in Voerendaal" aria-label="Wijk zoeken"></div>
 <div class="tbl"><table class="wijken"><thead><tr><th>Wijk</th><th>Woningen</th><th>Gas per woning</th><th>Zonnepanelen</th><th>Koop</th><th>Ouder dan 10 jaar</th></tr></thead><tbody><tr><td><a href="ubachsberg/">Ubachsberg</a></td><td class="num">698</td><td class="num">1.070 m³</td><td class="num">43%</td><td class="num">73%</td><td class="num">98%</td></tr><tr><td><a href="ransdaal/">Ransdaal</a></td><td class="num">409</td><td class="num">1.070 m³</td><td class="num">52%</td><td class="num">83%</td><td class="num">100%</td></tr><tr><td><a href="klimmen/">Klimmen</a></td><td class="num">1.441</td><td class="num">1.040 m³</td><td class="num">50%</td><td class="num">79%</td><td class="num">96%</td></tr><tr><td><a href="wijk02-kunrade/">Wijk02 Kunrade</a></td><td class="num">1.612</td><td class="num">970 m³</td><td class="num">49%</td><td class="num">73%</td><td class="num">98%</td></tr><tr><td><a href="voerendaal/">Voerendaal</a></td><td class="num">1.556</td><td class="num">930 m³</td><td class="num">36%</td><td class="num">54%</td><td class="num">94%</td></tr></tbody></table></div>

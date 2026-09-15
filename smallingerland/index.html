@@ -83,6 +83,16 @@ header .brand span{color:var(--warm)}
 .knoppen{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 4px}
 .knoppen a{display:inline-block;background:var(--acc);color:#fff;text-decoration:none;padding:9px 16px;border-radius:6px;font-weight:600}
 .toplijst td.num{width:120px}
+.reken{background:var(--panel);border:1px solid var(--line);padding:18px 20px;margin:12px 0 24px;max-width:720px}
+.reken .velden{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px 20px;margin:4px 0 14px}
+.reken label{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
+.reken input,.reken select{width:100%;font:inherit;font-size:16px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.reken .uit{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px 24px;border-top:1px solid var(--line);padding-top:14px}
+.reken .uit b{display:block;font-family:Archivo,sans-serif;font-size:30px;font-weight:800;line-height:1.1;color:var(--acc)}
+.reken .uit b.warm{color:var(--warm)}
+.reken .uit span{display:block;font-size:13px;color:var(--mut);margin-top:4px}
+.reken p.klein{margin:12px 0 0}
+.maatregelen{display:flex;flex-wrap:wrap;gap:8px 18px;margin:6px 0 18px;font-size:15px}
 .filter{margin:6px 0 12px;max-width:360px}
 .filter input{width:100%;font:inherit;padding:9px 12px;border:1px solid var(--line);border-radius:6px}
 </style>
@@ -96,6 +106,7 @@ header .brand span{color:var(--warm)}
 <h1>Energie per wijk in Smallingerland</h1>
 <p class="lead">26.564 woningen in 14 wijken. Gemiddeld 900 m³ gas per woning (Nederland 790 m³), 45% van de woningen heeft zonnepanelen, 4% is aardgasvrij.</p>
 <div class="advies"></div>
+<p class="maatregelen">Wat wil je doen? <a href="isolatie/">Isolatie in Smallingerland</a> <a href="warmtepomp/">Warmtepomp in Smallingerland</a> <a href="zonnepanelen/">Zonnepanelen in Smallingerland</a></p>
 <h2>Wijken, gesorteerd op gasverbruik</h2>
 <div class="filter"><input id="filter" placeholder="Zoek een wijk in Smallingerland" aria-label="Wijk zoeken"></div>
 <div class="tbl"><table class="wijken"><thead><tr><th>Wijk</th><th>Woningen</th><th>Gas per woning</th><th>Zonnepanelen</th><th>Koop</th><th>Ouder dan 10 jaar</th></tr></thead><tbody><tr><td><a href="buitengebied-noord/">Buitengebied Noord</a></td><td class="num">1.735</td><td class="num">1.040 m³</td><td class="num">53%</td><td class="num">77%</td><td class="num">95%</td></tr><tr><td><a href="buitengebied-oost/">Buitengebied Oost</a></td><td class="num">1.480</td><td class="num">1.040 m³</td><td class="num">48%</td><td class="num">72%</td><td class="num">96%</td></tr><tr><td><a href="buitengebied-west/">Buitengebied West</a></td><td class="num">1.335</td><td class="num">1.030 m³</td><td class="num">60%</td><td class="num">80%</td><td class="num">92%</td></tr><tr><td><a href="de-drait/">De Drait</a></td><td class="num">2.958</td><td class="num">1.000 m³</td><td class="num">52%</td><td class="num">72%</td><td class="num">95%</td></tr><tr><td><a href="de-singels/">De Singels</a></td><td class="num">1.900</td><td class="num">990 m³</td><td class="num">43%</td><td class="num">78%</td><td class="num">100%</td></tr><tr><td><a href="de-venen/">De Venen</a></td><td class="num">1.163</td><td class="num">950 m³</td><td class="num">47%</td><td class="num">64%</td><td class="num">100%</td></tr><tr><td><a href="de-wiken/">De Wiken</a></td><td class="num">2.883</td><td class="num">930 m³</td><td class="num">41%</td><td class="num">45%</td><td class="num">99%</td></tr><tr><td><a href="de-folgeren/">De Folgeren</a></td><td class="num">2.564</td><td class="num">880 m³</td><td class="num">53%</td><td class="num">77%</td><td class="num">94%</td></tr><tr><td><a href="de-swetten/">De Swetten</a></td><td class="num">2.296</td><td class="num">860 m³</td><td class="num">43%</td><td class="num">45%</td><td class="num">97%</td></tr><tr><td><a href="de-trisken/">De Trisken</a></td><td class="num">2.083</td><td class="num">860 m³</td><td class="num">48%</td><td class="num">66%</td><td class="num">100%</td></tr><tr><td><a href="noord-oost/">Noord-Oost</a></td><td class="num">2.350</td><td class="num">830 m³</td><td class="num">36%</td><td class="num">31%</td><td class="num">92%</td></tr><tr><td><a href="de-bouwen/">De Bouwen</a></td><td class="num">2.125</td><td class="num">750 m³</td><td class="num">27%</td><td class="num">28%</td><td class="num">89%</td></tr><tr><td><a href="centrum/">Centrum</a></td><td class="num">914</td><td class="num">690 m³</td><td class="num">10%</td><td class="num">42%</td><td class="num">100%</td></tr><tr><td><a href="drachtstervaart/">Drachtstervaart</a></td><td class="num">702</td><td class="num">630 m³</td><td class="num">76%</td><td class="num">89%</td><td class="num">65%</td></tr></tbody></table></div>

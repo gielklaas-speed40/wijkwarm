@@ -83,6 +83,16 @@ header .brand span{color:var(--warm)}
 .knoppen{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 4px}
 .knoppen a{display:inline-block;background:var(--acc);color:#fff;text-decoration:none;padding:9px 16px;border-radius:6px;font-weight:600}
 .toplijst td.num{width:120px}
+.reken{background:var(--panel);border:1px solid var(--line);padding:18px 20px;margin:12px 0 24px;max-width:720px}
+.reken .velden{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px 20px;margin:4px 0 14px}
+.reken label{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
+.reken input,.reken select{width:100%;font:inherit;font-size:16px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.reken .uit{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px 24px;border-top:1px solid var(--line);padding-top:14px}
+.reken .uit b{display:block;font-family:Archivo,sans-serif;font-size:30px;font-weight:800;line-height:1.1;color:var(--acc)}
+.reken .uit b.warm{color:var(--warm)}
+.reken .uit span{display:block;font-size:13px;color:var(--mut);margin-top:4px}
+.reken p.klein{margin:12px 0 0}
+.maatregelen{display:flex;flex-wrap:wrap;gap:8px 18px;margin:6px 0 18px;font-size:15px}
 .filter{margin:6px 0 12px;max-width:360px}
 .filter input{width:100%;font:inherit;padding:9px 12px;border:1px solid var(--line);border-radius:6px}
 </style>
@@ -96,6 +106,7 @@ header .brand span{color:var(--warm)}
 <h1>Energie per wijk in Wierden</h1>
 <p class="lead">10.369 woningen in 6 wijken. Gemiddeld 980 m³ gas per woning (Nederland 790 m³), 55% van de woningen heeft zonnepanelen, 8% is aardgasvrij.</p>
 <div class="advies"></div>
+<p class="maatregelen">Wat wil je doen? <a href="isolatie/">Isolatie in Wierden</a> <a href="warmtepomp/">Warmtepomp in Wierden</a> <a href="zonnepanelen/">Zonnepanelen in Wierden</a></p>
 <h2>Wijken, gesorteerd op gasverbruik</h2>
 <div class="filter"><input id="filter" placeholder="Zoek een wijk in Wierden" aria-label="Wijk zoeken"></div>
 <div class="tbl"><table class="wijken"><thead><tr><th>Wijk</th><th>Woningen</th><th>Gas per woning</th><th>Zonnepanelen</th><th>Koop</th><th>Ouder dan 10 jaar</th></tr></thead><tbody><tr><td><a href="rectum-notter-zuna/">Rectum - Notter - Zuna</a></td><td class="num">443</td><td class="num">1.270 m³</td><td class="num">52%</td><td class="num">86%</td><td class="num">89%</td></tr><tr><td><a href="landelijk-gebied-wierden/">Landelijk gebied Wierden</a></td><td class="num">583</td><td class="num">1.240 m³</td><td class="num">54%</td><td class="num">80%</td><td class="num">85%</td></tr><tr><td><a href="hooge-hexel/">Hooge-Hexel</a></td><td class="num">362</td><td class="num">1.220 m³</td><td class="num">41%</td><td class="num">72%</td><td class="num">92%</td></tr><tr><td><a href="landelijk-gebied-enter/">Landelijk gebied Enter</a></td><td class="num">681</td><td class="num">1.150 m³</td><td class="num">54%</td><td class="num">84%</td><td class="num">75%</td></tr><tr><td><a href="enter-kern/">Enter (kern)</a></td><td class="num">2.354</td><td class="num">1.010 m³</td><td class="num">55%</td><td class="num">74%</td><td class="num">94%</td></tr><tr><td><a href="wierden-kern/">Wierden (kern)</a></td><td class="num">5.946</td><td class="num">900 m³</td><td class="num">56%</td><td class="num">69%</td><td class="num">89%</td></tr></tbody></table></div>

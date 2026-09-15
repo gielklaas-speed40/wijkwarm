@@ -61,6 +61,16 @@ header .brand span{color:var(--warm)}
 .knoppen{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 4px}
 .knoppen a{display:inline-block;background:var(--acc);color:#fff;text-decoration:none;padding:9px 16px;border-radius:6px;font-weight:600}
 .toplijst td.num{width:120px}
+.reken{background:var(--panel);border:1px solid var(--line);padding:18px 20px;margin:12px 0 24px;max-width:720px}
+.reken .velden{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px 20px;margin:4px 0 14px}
+.reken label{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
+.reken input,.reken select{width:100%;font:inherit;font-size:16px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.reken .uit{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px 24px;border-top:1px solid var(--line);padding-top:14px}
+.reken .uit b{display:block;font-family:Archivo,sans-serif;font-size:30px;font-weight:800;line-height:1.1;color:var(--acc)}
+.reken .uit b.warm{color:var(--warm)}
+.reken .uit span{display:block;font-size:13px;color:var(--mut);margin-top:4px}
+.reken p.klein{margin:12px 0 0}
+.maatregelen{display:flex;flex-wrap:wrap;gap:8px 18px;margin:6px 0 18px;font-size:15px}
 .filter{margin:6px 0 12px;max-width:360px}
 .filter input{width:100%;font:inherit;padding:9px 12px;border:1px solid var(--line);border-radius:6px}
 """
@@ -250,6 +260,127 @@ def subsidietabel(kort: bool = False) -> str:
 <p class="klein">{e(s['isolatie']['toelichting'])} Zonnepanelen: {e(s['zonnepanelen']['toelichting'])} Thuisbatterij: {e(s['thuisbatterij']['toelichting'])} Bron en actuele voorwaarden: <a href="{e(s['bron'])}" rel="noopener" target="_blank">rvo.nl</a>.</p>"""
 
 
+GASPRIJS = 1.35   # euro per m³ inclusief belasting, aanpasbaar in de rekenhulp
+STROOMPRIJS = 0.28
+
+MAATREGELPAGINAS = {
+    "isolatie": {
+        "pad": "isolatie", "kop": "Isolatie in {g}", "cta": "isolatie",
+        "titel": "Isolatie in {g}: subsidie {jaar}, besparing en offertes",
+        "omschrijving": "Wat isolatie oplevert voor een woning in {g}, met de ISDE-subsidie van {jaar} en het gasverbruik per wijk.",
+        "intro": "Isolatie is de maatregel met de hoogste subsidie per euro en de kortste terugverdientijd. In {g} verbruikt een woning gemiddeld {gas} m³ gas per jaar en is {oud} procent van de woningen ouder dan tien jaar. Reken hieronder uit wat spouw, dak, vloer en glas voor jouw huis schelen.",
+        "kolom": ("gas_m3", " m³", "Gas per woning"),
+        "uitleg": "De besparingspercentages zijn de gebruikelijke waarden van Milieu Centraal voor een niet-geïsoleerde woning: spouwmuur 20 procent, dak 15 procent, vloer 8 procent en HR++ glas 10 procent. Is een deel al gedaan, dan valt de besparing lager uit. De subsidie gaat uit van twee of meer maatregelen binnen 24 maanden, dan geldt het dubbele bedrag per m².",
+    },
+    "warmtepomp": {
+        "pad": "warmtepomp", "kop": "Warmtepomp in {g}", "cta": "warmtepomp",
+        "titel": "Warmtepomp in {g}: subsidie {jaar}, besparing en offertes",
+        "omschrijving": "Wat een hybride of volledige warmtepomp oplevert in {g}, met de ISDE-subsidie van {jaar} en het gasverbruik per wijk.",
+        "intro": "Een hybride warmtepomp neemt het grootste deel van het stoken over en laat de cv-ketel alleen op de koudste dagen bijspringen. In {g} verbruikt een woning gemiddeld {gas} m³ gas per jaar; {stads} procent zit op stadsverwarming en komt dus niet in aanmerking. Reken uit wat een warmtepomp bij jouw verbruik doet.",
+        "kolom": ("gas_m3", " m³", "Gas per woning"),
+        "uitleg": "Een hybride warmtepomp vervangt doorgaans 60 tot 70 procent van het gasverbruik voor verwarming en gebruikt daarvoor stroom, ongeveer 1 kWh per 3 kWh warmte. De rekenhulp gaat uit van 65 procent en een rendement van 3,5. Een volledige warmtepomp vervangt alles, maar vraagt goede isolatie. De subsidie is het vaste bedrag plus het bedrag per kW, zonder de bonus voor A+++.",
+    },
+    "zonnepanelen": {
+        "pad": "zonnepanelen", "kop": "Zonnepanelen in {g}", "cta": "zonnepanelen",
+        "titel": "Zonnepanelen in {g}: opbrengst, salderen en offertes",
+        "omschrijving": "Wat zonnepanelen opleveren in {g}, hoeveel woningen ze al hebben en waar je offertes vergelijkt.",
+        "intro": "In {g} heeft {zon} procent van de woningen zonnepanelen, landelijk is dat {zon_nl} procent. Salderen loopt tot en met 2026, daarna telt vooral wat je zelf direct verbruikt. Reken uit wat een dak vol panelen bij jouw stroomverbruik oplevert.",
+        "kolom": ("zonnestroom_pct", "%", "Woningen met zonnepanelen"),
+        "uitleg": "Een paneel van 430 Wp levert in Nederland ongeveer 380 kWh per jaar op een gunstig dak. De rekenhulp rekent met de stroomprijs die je invult en gaat uit van volledig salderen. Na 2026 valt de opbrengst lager uit, hoe lager naarmate je minder overdag verbruikt. Er is geen ISDE-subsidie voor zonnepanelen, wel nul procent btw.",
+    },
+}
+
+
+def rekenhulp(maatregel: str, g: dict, nl: dict) -> str:
+    sub = SUBSIDIES
+    gas = int(g.get("gas_m3") or nl.get("gas_m3") or 1000)
+    stroom = int(g.get("stroom_kwh") or nl.get("stroom_kwh") or 2500)
+    iso = {m["naam"]: m for m in sub["isolatie"]["maatregelen"]}
+    if maatregel == "isolatie":
+        velden = f"""<div><label for="gas">Jouw gasverbruik per jaar (m³)</label><input id="gas" type="number" value="{gas}" min="0"></div>
+<div><label for="prijs">Gasprijs (euro per m³)</label><input id="prijs" type="number" step="0.01" value="{GASPRIJS}"></div>
+<div><label for="type">Woningtype</label><select id="type"><option value="tussen">Tussenwoning</option><option value="hoek">Hoekwoning</option><option value="twee">Twee-onder-een-kap</option><option value="vrij">Vrijstaand</option><option value="app">Appartement</option></select></div>"""
+        uitvoer = """<div><b id="u1" class="warm">0</b><span>besparing per jaar bij spouw, dak, vloer en HR++ glas samen</span></div>
+<div><b id="u2">0</b><span>ISDE-subsidie bij twee of meer maatregelen</span></div>
+<div><b id="u3">0</b><span>minder gas per jaar</span></div>"""
+        js = f"""var M2={{tussen:[45,50,50,18],hoek:[70,55,55,20],twee:[90,70,70,22],vrij:[130,100,90,28],app:[0,0,0,14]}};
+var T=[{iso['Spouwmuurisolatie']['per_m2_dubbel']},{iso['Dakisolatie']['per_m2_dubbel']},{iso['Vloer- of bodemisolatie']['per_m2_dubbel']},{iso['HR++ glas in bestaande kozijnen']['per_m2_dubbel']}];
+function reken(){{var gas=+v('gas'),p=+v('prijs'),t=v('type');var m=M2[t];var frac=(m[0]?0.20:0)+(m[1]?0.15:0)+(m[2]?0.08:0)+0.10;var minder=Math.round(gas*frac);var sub=0;for(var i=0;i<4;i++)sub+=m[i]*T[i];
+z('u1',euro(minder*p));z('u2',euro(sub));z('u3',minder.toLocaleString('nl-NL')+' m³');}}"""
+    elif maatregel == "warmtepomp":
+        wp = sub["warmtepomp"]
+        velden = f"""<div><label for="gas">Jouw gasverbruik per jaar (m³)</label><input id="gas" type="number" value="{gas}" min="0"></div>
+<div><label for="prijs">Gasprijs (euro per m³)</label><input id="prijs" type="number" step="0.01" value="{GASPRIJS}"></div>
+<div><label for="sprijs">Stroomprijs (euro per kWh)</label><input id="sprijs" type="number" step="0.01" value="{STROOMPRIJS}"></div>
+<div><label for="type">Soort warmtepomp</label><select id="type"><option value="hybride">Hybride, 5 kW</option><option value="vol">Volledig elektrisch, 8 kW</option></select></div>"""
+        uitvoer = """<div><b id="u1" class="warm">0</b><span>netto besparing per jaar</span></div>
+<div><b id="u2">0</b><span>ISDE-subsidie</span></div>
+<div><b id="u3">0</b><span>extra stroom per jaar</span></div>"""
+        js = f"""function reken(){{var gas=+v('gas'),p=+v('prijs'),sp=+v('sprijs'),t=v('type');var deel=t==='hybride'?0.65:1.0,kw=t==='hybride'?5:8;var warmte=gas*deel*8.8;var kwh=Math.round(warmte/3.5);var besp=gas*deel*p-kwh*sp;var sub={wp['basis']}+{wp['per_kw']}*kw;
+z('u1',euro(besp));z('u2',euro(sub));z('u3',kwh.toLocaleString('nl-NL')+' kWh');}}"""
+    else:
+        velden = f"""<div><label for="kwh">Jouw stroomverbruik per jaar (kWh)</label><input id="kwh" type="number" value="{stroom}" min="0"></div>
+<div><label for="sprijs">Stroomprijs (euro per kWh)</label><input id="sprijs" type="number" step="0.01" value="{STROOMPRIJS}"></div>
+<div><label for="n">Aantal panelen</label><input id="n" type="number" value="10" min="1" max="40"></div>"""
+        uitvoer = """<div><b id="u1" class="warm">0</b><span>opbrengst per jaar bij salderen</span></div>
+<div><b id="u2">0</b><span>kWh per jaar uit de panelen</span></div>
+<div><b id="u3">0</b><span>van je verbruik gedekt</span></div>"""
+        js = """function reken(){var kwh=+v('kwh'),sp=+v('sprijs'),n=+v('n');var op=n*380;var dek=kwh?Math.min(100,Math.round(op/kwh*100)):0;
+z('u1',euro(Math.min(op,kwh*1.0)*sp+Math.max(0,op-kwh)*0.05));z('u2',op.toLocaleString('nl-NL')+' kWh');z('u3',dek+'%');}"""
+    return f"""<div class="reken">
+<div class="velden">{velden}</div>
+<div class="uit">{uitvoer}</div>
+<p class="klein">Schatting op basis van gemiddelden, geen offerte. De gemeentecijfers staan voor-ingevuld, vul je eigen jaarafrekening in voor een beter beeld.</p>
+</div>
+<script>
+(function(){{function v(id){{return document.getElementById(id).value;}}function z(id,t){{document.getElementById(id).textContent=t;}}
+function euro(x){{return Math.round(x).toLocaleString('nl-NL')+' euro';}}
+{js}
+document.querySelectorAll('.reken input,.reken select').forEach(function(el){{el.addEventListener('input',reken);}});reken();}})();
+</script>"""
+
+
+def bouw_maatregelpaginas(gemeenten: dict, gem_slugs: dict, wijken_per_gemeente: dict, nl: dict, uit: str, wijknaam) -> list[str]:
+    urls = []
+    for gm, g in gemeenten.items():
+        gslug = gem_slugs[gm]
+        gnaam = g["gemeente"]
+        wijken = wijken_per_gemeente.get(gm, [])
+        for key, c in MAATREGELPAGINAS.items():
+            veld, eenheid, kolomkop = c["kolom"]
+            rijen = sorted([w for w in wijken if w.get(veld) is not None], key=lambda w: -w[veld])
+            wijktabel = ""
+            if rijen:
+                wijktabel = f'<h2>Per wijk in {e(gnaam)}</h2><div class="tbl"><table><tr><th>Wijk</th><th>{e(kolomkop)}</th><th>Koop</th><th>Ouder dan 10 jaar</th></tr>' + "".join(
+                    f'<tr><td><a href="../{slugify(wijknaam(w["code"]))}/">{e(wijknaam(w["code"]))}</a></td><td class="num">{getal(w.get(veld), eenheid)}</td><td class="num">{getal(w.get("koop_pct"), "%")}</td><td class="num">{getal(w.get("ouder_dan_tien_jaar_pct"), "%")}</td></tr>'
+                    for w in rijen) + "</table></div>"
+            ctx = dict(g=gnaam, jaar=SUBSIDIES["jaar"], gas=getal(g.get("gas_m3")), oud=getal(g.get("ouder_dan_tien_jaar_pct")),
+                       stads=getal(g.get("stadsverwarming_pct") or 0), zon=getal(g.get("zonnestroom_pct")), zon_nl=getal(nl.get("zonnestroom_pct")))
+            partners = CONFIG.get("partners", {})
+            p = partners.get(c["cta"]) or {}
+            cta = ""
+            if p.get("url"):
+                cta = f"""<h2>Offertes vergelijken</h2><div class="blok"><p style="margin:0 0 10px">Drie prijzen naast elkaar leggen scheelt in de praktijk het meest. Via {e(p.get('naam') or 'onze partner')} vraag je ze in één keer aan bij bedrijven die in {e(gnaam)} werken.</p>
+<div class="knoppen"><a href="{e(p['url'])}" rel="sponsored nofollow noopener" target="_blank">Vraag drie offertes aan</a></div>
+<p class="klein" style="margin:10px 0 0">Wij ontvangen een vergoeding als je via deze knop offertes aanvraagt. Dat verandert niets aan de prijs die je betaalt.</p></div>"""
+            andere = " ".join(f'<a href="../{o["pad"]}/">{e(o["kop"].format(g=gnaam))}</a>' for k, o in MAATREGELPAGINAS.items() if k != key)
+            body = f"""<h1>{e(c['kop'].format(**ctx))}</h1>
+<p class="lead">{e(c['intro'].format(**ctx))}</p>
+<h2>Reken het uit voor jouw huis</h2>
+{rekenhulp(key, g, nl)}
+<p class="klein">{e(c['uitleg'])}</p>
+{cta}
+{wijktabel}
+<h2>Subsidie in {SUBSIDIES['jaar']}</h2>
+{subsidietabel()}
+<p class="klein">Ook interessant: {andere}. Alle cijfers van {e(gnaam)}: <a href="../">energie per wijk in {e(gnaam)}</a>.</p>"""
+            os.makedirs(os.path.join(uit, gslug, c["pad"]), exist_ok=True)
+            with open(os.path.join(uit, gslug, c["pad"], "index.html"), "w", encoding="utf-8") as f:
+                f.write(pagina(c["titel"].format(**ctx), body, 2, c["omschrijving"].format(**ctx), f"{gslug}/{c['pad']}/"))
+            urls.append(f"{gslug}/{c['pad']}/")
+    return urls
+
+
 def bouw_site(rijen: list[dict], namen: dict, uit: str, vandaag: dt.date, bronnen: dict | None = None) -> dict:
     global BRONTEKST
     BRONTEKST = brontekst(bronnen)
@@ -308,6 +439,7 @@ def bouw_site(rijen: list[dict], namen: dict, uit: str, vandaag: dt.date, bronne
 <h2>Subsidie in {SUBSIDIES['jaar']}</h2>
 {subsidietabel()}
 {knoppen(f"wijk:{gnaam}/{wnaam}")}
+<p class="maatregelen">Reken het uit voor jouw huis: {" ".join(f'<a href="../{c["pad"]}/">{e(c["kop"].format(g=gnaam))}</a>' for c in MAATREGELPAGINAS.values())}</p>
 <p class="klein">Verbouwen in {e(gnaam)}? Bekijk de <a href="{VERGUNNINGEN_URL}{gslug}/">recente bouwvergunningen in {e(gnaam)}</a> op Vergunningenradar. Andere wijken: <a href="../">{e(gnaam)}</a>.</p>"""
             with open(os.path.join(uit, gslug, wslug, "index.html"), "w", encoding="utf-8") as f:
                 f.write(pagina(f"Energie in {wnaam} ({gnaam}): gasverbruik, zonnepanelen en subsidie {SUBSIDIES['jaar']}", body, 2,
@@ -317,6 +449,7 @@ def bouw_site(rijen: list[dict], namen: dict, uit: str, vandaag: dt.date, bronne
         body = f"""<h1>Energie per wijk in {e(gnaam)}</h1>
 <p class="lead">{getal(g.get('woningen'))} woningen in {len(wijken)} wijken. Gemiddeld {getal(g.get('gas_m3'))} m³ gas per woning (Nederland {getal(nl.get('gas_m3'))} m³), {getal(g.get('zonnestroom_pct'), '%')} van de woningen heeft zonnepanelen, {getal(g.get('aardgasvrij_pct'), '%')} is aardgasvrij.</p>
 <div class="advies">{"".join(f"<p>{e(a)}</p>" for a in alineas_g)}</div>
+<p class="maatregelen">Wat wil je doen? {" ".join(f'<a href="{c["pad"]}/">{e(c["kop"].format(g=gnaam))}</a>' for c in MAATREGELPAGINAS.values())}</p>
 <h2>Wijken, gesorteerd op gasverbruik</h2>
 <div class="filter"><input id="filter" placeholder="Zoek een wijk in {e(gnaam)}" aria-label="Wijk zoeken"></div>
 <div class="tbl"><table class="wijken"><thead><tr><th>Wijk</th><th>Woningen</th><th>Gas per woning</th><th>Zonnepanelen</th><th>Koop</th><th>Ouder dan 10 jaar</th></tr></thead><tbody>{"".join(wijkrijen)}</tbody></table></div>
@@ -330,9 +463,14 @@ def bouw_site(rijen: list[dict], namen: dict, uit: str, vandaag: dt.date, bronne
         with open(os.path.join(uit, "data", f"{gslug}.json"), "w", encoding="utf-8") as f:
             json.dump({"gemeente": g, "wijken": wijken}, f, ensure_ascii=False, separators=(",", ":"))
 
+    maatregel_urls = bouw_maatregelpaginas(gemeenten, gem_slugs, wijken_per_gemeente, nl, uit, wijknaam)
+    urls.extend(maatregel_urls)
+
     # Overzicht
     for gm, g in gemeenten.items():
         zoekdata.append([g["gemeente"], "", f"{gem_slugs[gm]}/"])
+        for key, c in MAATREGELPAGINAS.items():
+            zoekdata.append([c["kop"].format(g=g["gemeente"]), "", f"{gem_slugs[gm]}/{c['pad']}/"])
     for w, wn, gn, pad in alle_wijken:
         zoekdata.append([wn, gn, pad])
     zoekdata.sort(key=lambda r: (r[1] != "", r[0]))
@@ -359,7 +497,7 @@ def bouw_site(rijen: list[dict], namen: dict, uit: str, vandaag: dt.date, bronne
 <div><h2>Wijken met de meeste zonnepanelen</h2><div class="tbl"><table class="toplijst">{"".join(toprij(x, "zonnestroom_pct", "%") for x in meeste_zon)}</table></div><p class="klein">Aandeel woningen met zonnestroom.</p></div>
 </div>
 <h2>Alle gemeenten</h2>
-<p class="klein">Met het gemiddelde gasverbruik per woning.</p>
+<p class="klein">Met het gemiddelde gasverbruik per woning. Per gemeente vind je ook een rekenhulp voor isolatie, een warmtepomp en zonnepanelen.</p>
 <div class="kolommen">{links}</div>
 <p class="klein" style="margin-top:24px">{e(BRONTEKST)} Bijgewerkt op {e(datum_nl(vandaag.isoformat()))}.</p>
 <script id="zoekdata" type="application/json">{json.dumps(zoekdata, ensure_ascii=False, separators=(",", ":"))}</script>

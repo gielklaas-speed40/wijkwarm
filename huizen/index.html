@@ -83,6 +83,16 @@ header .brand span{color:var(--warm)}
 .knoppen{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 4px}
 .knoppen a{display:inline-block;background:var(--acc);color:#fff;text-decoration:none;padding:9px 16px;border-radius:6px;font-weight:600}
 .toplijst td.num{width:120px}
+.reken{background:var(--panel);border:1px solid var(--line);padding:18px 20px;margin:12px 0 24px;max-width:720px}
+.reken .velden{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px 20px;margin:4px 0 14px}
+.reken label{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
+.reken input,.reken select{width:100%;font:inherit;font-size:16px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.reken .uit{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px 24px;border-top:1px solid var(--line);padding-top:14px}
+.reken .uit b{display:block;font-family:Archivo,sans-serif;font-size:30px;font-weight:800;line-height:1.1;color:var(--acc)}
+.reken .uit b.warm{color:var(--warm)}
+.reken .uit span{display:block;font-size:13px;color:var(--mut);margin-top:4px}
+.reken p.klein{margin:12px 0 0}
+.maatregelen{display:flex;flex-wrap:wrap;gap:8px 18px;margin:6px 0 18px;font-size:15px}
 .filter{margin:6px 0 12px;max-width:360px}
 .filter input{width:100%;font:inherit;padding:9px 12px;border:1px solid var(--line);border-radius:6px}
 </style>
@@ -96,6 +106,7 @@ header .brand span{color:var(--warm)}
 <h1>Energie per wijk in Huizen</h1>
 <p class="lead">19.209 woningen in 12 wijken. Gemiddeld 910 m³ gas per woning (Nederland 790 m³), 39% van de woningen heeft zonnepanelen, 2% is aardgasvrij.</p>
 <div class="advies"></div>
+<p class="maatregelen">Wat wil je doen? <a href="isolatie/">Isolatie in Huizen</a> <a href="warmtepomp/">Warmtepomp in Huizen</a> <a href="zonnepanelen/">Zonnepanelen in Huizen</a></p>
 <h2>Wijken, gesorteerd op gasverbruik</h2>
 <div class="filter"><input id="filter" placeholder="Zoek een wijk in Huizen" aria-label="Wijk zoeken"></div>
 <div class="tbl"><table class="wijken"><thead><tr><th>Wijk</th><th>Woningen</th><th>Gas per woning</th><th>Zonnepanelen</th><th>Koop</th><th>Ouder dan 10 jaar</th></tr></thead><tbody><tr><td><a href="buitenwijken/">Buitenwijken</a></td><td class="num">359</td><td class="num">2.190 m³</td><td class="num">26%</td><td class="num">92%</td><td class="num">97%</td></tr><tr><td><a href="staatslieden-en-componistenbuurt/">Staatslieden en Componistenbuurt</a></td><td class="num">1.224</td><td class="num">1.290 m³</td><td class="num">41%</td><td class="num">79%</td><td class="num">99%</td></tr><tr><td><a href="westereng/">Westereng</a></td><td class="num">1.020</td><td class="num">1.230 m³</td><td class="num">51%</td><td class="num">66%</td><td class="num">99%</td></tr><tr><td><a href="oude-dorp/">Oude Dorp</a></td><td class="num">3.025</td><td class="num">990 m³</td><td class="num">37%</td><td class="num">61%</td><td class="num">97%</td></tr><tr><td><a href="stad-en-lande/">Stad en Lande</a></td><td class="num">1.613</td><td class="num">930 m³</td><td class="num">43%</td><td class="num">56%</td><td class="num">95%</td></tr><tr><td><a href="hogemaat/">Hogemaat</a></td><td class="num">989</td><td class="num">880 m³</td><td class="num">42%</td><td class="num">83%</td><td class="num">100%</td></tr><tr><td><a href="huizermaat-west-en-zuid/">Huizermaat West en Zuid</a></td><td class="num">2.821</td><td class="num">860 m³</td><td class="num">43%</td><td class="num">48%</td><td class="num">100%</td></tr><tr><td><a href="bijvanck/">Bijvanck</a></td><td class="num">973</td><td class="num">820 m³</td><td class="num">44%</td><td class="num">51%</td><td class="num">100%</td></tr><tr><td><a href="zenderwijk-en-bovenweg/">Zenderwijk en Bovenweg</a></td><td class="num">1.930</td><td class="num">750 m³</td><td class="num">27%</td><td class="num">51%</td><td class="num">99%</td></tr><tr><td><a href="huizermaat-noord/">Huizermaat Noord</a></td><td class="num">1.447</td><td class="num">720 m³</td><td class="num">35%</td><td class="num">56%</td><td class="num">97%</td></tr><tr><td><a href="bovenmaten/">Bovenmaten</a></td><td class="num">2.920</td><td class="num">710 m³</td><td class="num">40%</td><td class="num">51%</td><td class="num">99%</td></tr><tr><td><a href="havengebied/">Havengebied</a></td><td class="num">742</td><td class="num">690 m³</td><td class="num">37%</td><td class="num">70%</td><td class="num">85%</td></tr></tbody></table></div>
