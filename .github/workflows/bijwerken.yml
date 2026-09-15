@@ -40,3 +40,5 @@ jobs:
           fi
           git commit -m "Update $(date -u +%Y-%m-%d)"
           git push
+      - name: Publiceren naar gh-pages
+        run: git push -f origin HEAD:gh-pages
