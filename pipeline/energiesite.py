@@ -167,7 +167,7 @@ def pagina(titel: str, body: str, diepte: int, omschrijving: str, canonical: str
 <main><div class="wrap">
 {body}
 </div></main>
-<footer><div class="wrap">{BRONTEKST} Subsidiebedragen van RVO, controleer altijd de actuele regeling. Een dienst van <a href="https://klaasystems.nl/">Klaasystems</a>.</div></footer>
+<footer><div class="wrap">{BRONTEKST} Subsidiebedragen van RVO, controleer altijd de actuele regeling. Een dienst van <a href="https://klaasystems.nl/">Klaasystems</a>. <a href="{root}privacy.html">Privacy</a>.</div></footer>
 </body>
 </html>
 """
@@ -513,7 +513,7 @@ def bouw_site(rijen: list[dict], namen: dict, uit: str, vandaag: dt.date, bronne
 
     with open(os.path.join(uit, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
-        for u in ["", "subsidie.html", "over.html"] + urls:
+        for u in ["", "subsidie.html", "over.html", "privacy.html"] + urls:
             f.write(f"<url><loc>{BASIS_URL}{e(u)}</loc><lastmod>{vandaag.isoformat()}</lastmod></url>\n")
         f.write("</urlset>\n")
     return {"gemeenten": len(gemeenten), "wijken": sum(len(v) for v in wijken_per_gemeente.values())}
