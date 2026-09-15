@@ -23,11 +23,87 @@ MAATREGELEN = {
 }
 
 EXTRA_CSS = """
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&display=swap');
+:root{--warm:#c2571a;--warm-soft:#fbe9dd;--acc-soft:#e3f2ee}
+h1,h2,.hero h1,.kern b{font-family:Archivo,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1{font-size:34px;font-weight:800;letter-spacing:-.3px;line-height:1.1}
+h2{font-size:19px;font-weight:700}
+header .brand{font-family:Archivo,sans-serif;font-weight:800;font-size:20px;letter-spacing:-.2px}
+header .brand span{color:var(--warm)}
+.hero{padding:34px 0 8px;max-width:760px}
+.hero p.lead{font-size:17px;margin-top:10px}
+.zoek{position:relative;max-width:560px;margin:18px 0 6px}
+.zoek input{width:100%;font:inherit;font-size:17px;padding:13px 16px;border:2px solid var(--ink);border-radius:8px;background:#fff}
+.zoek input:focus{outline:none;border-color:var(--warm)}
+.zoek ul{position:absolute;left:0;right:0;top:100%;margin:4px 0 0;padding:6px 0;list-style:none;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(21,32,43,.12);z-index:5;max-height:320px;overflow:auto}
+.zoek ul:empty{display:none}
+.zoek li a{display:block;padding:8px 14px;text-decoration:none;color:var(--ink)}
+.zoek li a:hover,.zoek li.actief a{background:var(--acc-soft)}
+.zoek li a span{color:var(--mut);font-size:13px;margin-left:6px}
+.kern{display:flex;gap:28px 40px;flex-wrap:wrap;align-items:flex-end;margin:22px 0 6px}
+.kern div{min-width:120px}
+.kern b{display:block;font-size:38px;font-weight:800;line-height:1;color:var(--ink)}
+.kern b.groot{font-size:56px;color:var(--warm)}
+.kern span{display:block;color:var(--mut);font-size:13px;margin-top:6px;max-width:200px}
+.staven{margin:14px 0 26px}
+.staven .rij{display:grid;grid-template-columns:130px 1fr 90px;align-items:center;gap:12px;margin:0 0 8px;font-size:14px}
+.staven .rij .lbl{color:var(--mut)}
+.staven .rij.wijk .lbl{color:var(--ink);font-weight:600}
+.staven .balk{height:14px;background:#e6eaef;border-radius:0 4px 4px 0;position:relative}
+.staven .balk i{display:block;height:100%;border-radius:0 4px 4px 0;background:#9aa8b8}
+.staven .rij.wijk .balk i{background:var(--warm)}
+.staven.zon .rij.wijk .balk i{background:var(--acc)}
+.staven .val{font-variant-numeric:tabular-nums;font-weight:600;text-align:right}
+.staven .titel{font-weight:700;margin:0 0 8px}
+.tweekolom{display:grid;grid-template-columns:1fr 1fr;gap:20px 40px}
+@media (max-width:700px){.tweekolom{grid-template-columns:1fr}.staven .rij{grid-template-columns:96px 1fr 70px}h1{font-size:28px}.kern b.groot{font-size:44px}}
 .cijfers td.num{width:110px}
-.advies p{margin:0 0 10px}
+.advies p{margin:0 0 10px;max-width:760px;font-size:16px}
 .knoppen{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 4px}
 .knoppen a{display:inline-block;background:var(--acc);color:#fff;text-decoration:none;padding:9px 16px;border-radius:6px;font-weight:600}
+.toplijst td.num{width:120px}
+.filter{margin:6px 0 12px;max-width:360px}
+.filter input{width:100%;font:inherit;padding:9px 12px;border:1px solid var(--line);border-radius:6px}
 """
+
+ZOEK_JS = r"""<script>
+(function(){
+var inp=document.getElementById('zoek');if(!inp)return;
+var lijst=JSON.parse(document.getElementById('zoekdata').textContent);
+var ul=document.getElementById('zoekres');var act=-1;
+function norm(t){return t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
+function render(q){ul.innerHTML='';act=-1;q=norm(q.trim());if(q.length<2)return;
+ var hits=[];for(var i=0;i<lijst.length&&hits.length<12;i++){var r=lijst[i];if(norm(r[0]).indexOf(q)===0||norm(r[0]).indexOf(' '+q)>=0||(r[1]&&norm(r[1]).indexOf(q)===0&&hits.length<6))hits.push(r);}
+ if(!hits.length){for(var j=0;j<lijst.length&&hits.length<12;j++){var s=lijst[j];if(norm(s[0]).indexOf(q)>=0)hits.push(s);}}
+ hits.forEach(function(r){var li=document.createElement('li');var a=document.createElement('a');a.href=r[2];a.textContent=r[0];if(r[1]){var sp=document.createElement('span');sp.textContent=r[1];a.appendChild(sp);}li.appendChild(a);ul.appendChild(li);});}
+inp.addEventListener('input',function(){render(inp.value);});
+inp.addEventListener('keydown',function(e){var items=ul.querySelectorAll('li');if(!items.length)return;
+ if(e.key==='ArrowDown'){act=Math.min(act+1,items.length-1);}else if(e.key==='ArrowUp'){act=Math.max(act-1,0);}else if(e.key==='Enter'){e.preventDefault();var t=items[act>=0?act:0].querySelector('a');if(t)location.href=t.href;return;}else return;
+ e.preventDefault();items.forEach(function(li,i){li.classList.toggle('actief',i===act);});});
+document.addEventListener('click',function(e){if(!inp.parentNode.contains(e.target))ul.innerHTML='';});
+})();
+</script>"""
+
+FILTER_JS = """<script>
+(function(){var f=document.getElementById('filter');if(!f)return;var rijen=document.querySelectorAll('table.wijken tbody tr');
+f.addEventListener('input',function(){var q=f.value.toLowerCase();rijen.forEach(function(r){r.style.display=r.textContent.toLowerCase().indexOf(q)>=0?'':'none';});});})();
+</script>"""
+
+
+def staven(titel: str, rijen: list[tuple[str, float | None, bool]], eenheid: str, klasse: str = "") -> str:
+    """Horizontale staafjes: [(label, waarde, is_wijk)], breedte relatief aan het maximum."""
+    waarden = [w for _, w, _ in rijen if w is not None]
+    if not waarden:
+        return ""
+    mx = max(waarden) or 1
+    uit = [f'<div class="staven {klasse}"><p class="titel">{e(titel)}</p>']
+    for label, w, is_wijk in rijen:
+        if w is None:
+            continue
+        pct = max(2, round(w / mx * 100))
+        uit.append(f'<div class="rij{" wijk" if is_wijk else ""}"><span class="lbl">{e(label)}</span><div class="balk"><i style="width:{pct}%"></i></div><span class="val">{getal(w, eenheid)}</span></div>')
+    uit.append("</div>")
+    return "".join(uit)
 
 
 def getal(w, eenheid: str = "", decimalen: int = 0) -> str:
@@ -198,6 +274,8 @@ def bouw_site(rijen: list[dict], namen: dict, uit: str, vandaag: dt.date, bronne
 
     # Gemeente- en wijkpagina's
     gem_slugs: dict[str, str] = {}
+    zoekdata: list[list] = []
+    alle_wijken: list[tuple[dict, str, str, str]] = []
     for gm, g in sorted(gemeenten.items(), key=lambda kv: kv[1]["gemeente"]):
         gnaam = g["gemeente"]
         gslug = slugify(gnaam)
@@ -212,14 +290,19 @@ def bouw_site(rijen: list[dict], namen: dict, uit: str, vandaag: dt.date, bronne
             if wslug in wijkslugs:
                 wslug = f"{wslug}-{w['code'].lower().strip()}"
             wijkslugs[wslug] = w
+            alle_wijken.append((w, wnaam, gnaam, f"{gslug}/{wslug}/"))
             wijkrijen.append(f'<tr><td><a href="{wslug}/">{e(wnaam)}</a></td><td class="num">{getal(w.get("woningen"))}</td><td class="num">{getal(w.get("gas_m3"), " m³")}</td><td class="num">{getal(w.get("zonnestroom_pct"), "%")}</td><td class="num">{getal(w.get("koop_pct"), "%")}</td><td class="num">{getal(w.get("ouder_dan_tien_jaar_pct"), "%")}</td></tr>')
-            # Wijkpagina
+                # Wijkpagina
             os.makedirs(os.path.join(uit, gslug, wslug), exist_ok=True)
             alineas = advies(w, g, nl, wnaam)
             body = f"""<h1>Energie in {e(wnaam)}, {e(gnaam)}</h1>
 <p class="lead">{getal(w.get('woningen'))} woningen, {getal(w.get('koop_pct'), '%')} koop. Gemiddeld {getal(w.get('gas_m3'))} m³ gas en {getal(w.get('stroom_kwh'))} kWh stroom per woning per jaar, {getal(w.get('zonnestroom_pct'), '%')} van de woningen heeft zonnepanelen.{(' Postcode ' + e(w.get('postcode'))) + '.' if w.get('postcode') else ''}</p>
 <div class="advies">{"".join(f"<p>{e(a)}</p>" for a in alineas)}</div>
 <h2>De cijfers naast elkaar</h2>
+<div class="tweekolom">
+{staven("Gasverbruik per woning per jaar", [(wnaam, w.get("gas_m3"), True), (gnaam, g.get("gas_m3"), False), ("Nederland", nl.get("gas_m3"), False)], " m³")}
+{staven("Woningen met zonnepanelen", [(wnaam, w.get("zonnestroom_pct"), True), (gnaam, g.get("zonnestroom_pct"), False), ("Nederland", nl.get("zonnestroom_pct"), False)], "%", "zon")}
+</div>
 {cijfertabel(w, g, nl, wnaam, gnaam)}
 <h2>Subsidie in {SUBSIDIES['jaar']}</h2>
 {subsidietabel()}
@@ -234,7 +317,9 @@ def bouw_site(rijen: list[dict], namen: dict, uit: str, vandaag: dt.date, bronne
 <p class="lead">{getal(g.get('woningen'))} woningen in {len(wijken)} wijken. Gemiddeld {getal(g.get('gas_m3'))} m³ gas per woning (Nederland {getal(nl.get('gas_m3'))} m³), {getal(g.get('zonnestroom_pct'), '%')} van de woningen heeft zonnepanelen, {getal(g.get('aardgasvrij_pct'), '%')} is aardgasvrij.</p>
 <div class="advies">{"".join(f"<p>{e(a)}</p>" for a in alineas_g)}</div>
 <h2>Wijken, gesorteerd op gasverbruik</h2>
-<div class="tbl"><table><tr><th>Wijk</th><th>Woningen</th><th>Gas per woning</th><th>Zonnepanelen</th><th>Koop</th><th>Ouder dan 10 jaar</th></tr>{"".join(wijkrijen)}</table></div>
+<div class="filter"><input id="filter" placeholder="Zoek een wijk in {e(gnaam)}" aria-label="Wijk zoeken"></div>
+<div class="tbl"><table class="wijken"><thead><tr><th>Wijk</th><th>Woningen</th><th>Gas per woning</th><th>Zonnepanelen</th><th>Koop</th><th>Ouder dan 10 jaar</th></tr></thead><tbody>{"".join(wijkrijen)}</tbody></table></div>
+{FILTER_JS}
 {knoppen(f"gemeente:{gnaam}")}
 <p class="klein">Bekijk ook de <a href="{VERGUNNINGEN_URL}{gslug}/">recente bouwvergunningen in {e(gnaam)}</a> op Vergunningenradar.</p>"""
         with open(os.path.join(uit, gslug, "index.html"), "w", encoding="utf-8") as f:
@@ -245,13 +330,39 @@ def bouw_site(rijen: list[dict], namen: dict, uit: str, vandaag: dt.date, bronne
             json.dump({"gemeente": g, "wijken": wijken}, f, ensure_ascii=False, separators=(",", ":"))
 
     # Overzicht
+    for gm, g in gemeenten.items():
+        zoekdata.append([g["gemeente"], "", f"{gem_slugs[gm]}/"])
+    for w, wn, gn, pad in alle_wijken:
+        zoekdata.append([wn, gn, pad])
+    zoekdata.sort(key=lambda r: (r[1] != "", r[0]))
     links = "".join(f'<div><a href="{gem_slugs[gm]}/">{e(g["gemeente"])}</a> <span class="n">{getal(g.get("gas_m3"))} m³</span></div>'
                     for gm, g in sorted(gemeenten.items(), key=lambda kv: kv[1]["gemeente"]))
-    body = f"""<h1>Gasverbruik, zonnepanelen en subsidie per wijk</h1>
-<p class="lead">Voor elke wijk in Nederland: hoeveel gas en stroom een woning gemiddeld verbruikt, hoeveel huizen zonnepanelen hebben, hoe oud de woningen zijn en wat de ISDE-subsidie in {SUBSIDIES['jaar']} oplevert. Landelijk verbruikt een woning {getal(nl.get('gas_m3'))} m³ gas en {getal(nl.get('stroom_kwh'))} kWh stroom per jaar, {getal(nl.get('zonnestroom_pct'), '%')} van de woningen heeft zonnepanelen.</p>
-<p class="klein">{e(BRONTEKST)} Bijgewerkt op {e(datum_nl(vandaag.isoformat()))}.</p>
-<h2>Kies je gemeente</h2>
-<div class="kolommen">{links}</div>"""
+    grote = [x for x in alle_wijken if (x[0].get("woningen") or 0) >= 1000 and x[0].get("gas_m3")]
+    meeste_gas = sorted(grote, key=lambda x: -x[0]["gas_m3"])[:8]
+    meeste_zon = sorted([x for x in grote if x[0].get("zonnestroom_pct") is not None], key=lambda x: -x[0]["zonnestroom_pct"])[:8]
+    def toprij(x, veld, eenheid):
+        w, wn, gn, pad = x
+        return f'<tr><td><a href="{pad}">{e(wn)}</a> <span class="klein">{e(gn)}</span></td><td class="num">{getal(w.get(veld), eenheid)}</td></tr>'
+    body = f"""<div class="hero">
+<h1>Hoeveel gas verbruikt jouw wijk?</h1>
+<p class="lead">Zoek je wijk en zie in één oogopslag hoe jouw buurt ervoor staat: gasverbruik, zonnepanelen, woningtype en de subsidie die je in {SUBSIDIES['jaar']} kunt krijgen. Cijfers van het CBS, voor alle {len(alle_wijken)} wijken van Nederland.</p>
+<div class="zoek"><input id="zoek" type="search" placeholder="Typ je wijk of gemeente, bijvoorbeeld Brouwhuis of Helmond" autocomplete="off" aria-label="Zoek wijk of gemeente"><ul id="zoekres"></ul></div>
+</div>
+<div class="kern">
+<div><b class="groot">{getal(nl.get('gas_m3'))} m³</b><span>gas per woning per jaar, landelijk gemiddelde</span></div>
+<div><b>{getal(nl.get('zonnestroom_pct'), '%')}</b><span>van de woningen heeft zonnepanelen</span></div>
+<div><b>{getal(nl.get('aardgasvrij_pct'), '%')}</b><span>van de woningen is aardgasvrij</span></div>
+</div>
+<div class="tweekolom">
+<div><h2>Wijken met het hoogste gasverbruik</h2><div class="tbl"><table class="toplijst">{"".join(toprij(x, "gas_m3", " m³") for x in meeste_gas)}</table></div><p class="klein">Wijken met minstens 1000 woningen.</p></div>
+<div><h2>Wijken met de meeste zonnepanelen</h2><div class="tbl"><table class="toplijst">{"".join(toprij(x, "zonnestroom_pct", "%") for x in meeste_zon)}</table></div><p class="klein">Aandeel woningen met zonnestroom.</p></div>
+</div>
+<h2>Alle gemeenten</h2>
+<p class="klein">Met het gemiddelde gasverbruik per woning.</p>
+<div class="kolommen">{links}</div>
+<p class="klein" style="margin-top:24px">{e(BRONTEKST)} Bijgewerkt op {e(datum_nl(vandaag.isoformat()))}.</p>
+<script id="zoekdata" type="application/json">{json.dumps(zoekdata, ensure_ascii=False, separators=(",", ":"))}</script>
+{ZOEK_JS}"""
     with open(os.path.join(uit, "index.html"), "w", encoding="utf-8") as f:
         f.write(pagina("Energie per wijk: gasverbruik, zonnepanelen en subsidie per gemeente", body, 0,
                        "Gasverbruik, stroom en zonnepanelen per wijk voor alle Nederlandse gemeenten, met de ISDE-subsidie.", ""))
